@@ -1,8 +1,16 @@
 # text_similarity
 
-Search the Internet for similar texts.
+<p align="center">
+<img src="similarity_checker.png" alt="Slidev" height="250" width="250"/>
+</p>
 
-![alt text](image.png)
+
+<p align="center">
+Search the Internet for similar texts. 
+</p>
+
+sample:
+![alt text](sample.png)
 
 ### usage
 Make the necessary settings
