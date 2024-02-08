@@ -1,18 +1,24 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Character Count</title>
+    <title>Similarity Checker</title>
 </head>
 <body>
-    <h1>Character Count</h1>
+    <h1>Similarity Checker Viewer</h1>
     <form method="POST">
         {% csrf_token %}
         <textarea name="text" rows="5" cols="30">{{ text }}</textarea>
         <br>
-        <button type="submit">Count Characters</button>
+        <button type="submit">check sentence</button>
     </form>
-    {% if count %}
-    <p>Number of characters: {{ count }}</p>
+    {% if response_data %}
+        <h2>Response:</h2>
+        <p>Found: {{ response_data.found }}</p>
+        <p>Target Sentence: {{ response_data.target_sentence }}</p>
+        <p>Found Sentence: {{ response_data.found_sentence }}</p>
+        <p>Reason: {{ response_data.reason }}</p>
+        <p>Similarity: {{ response_data.similarity }}%</p>
+        <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
     {% endif %}
 </body>
 </html>

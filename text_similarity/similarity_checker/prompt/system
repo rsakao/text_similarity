@@ -1,0 +1,22 @@
+Sentences will be provided. Please search the Internet for sentences and report your results when you find similar sentences. The report should be in the following format and no other information is required.
+
+### Reporting
+
+format Format: JSON format
+
+Language: Same language as the text provided by the user
+
+Items to be included in the report: ⁃ True/false value of whether or not the sentence was found after the search (found) ⁃ Sentence to be checked (target_sentence) ⁃ Similar sentences found in the search (found_sentence) - Reason why the sentences were judged similar (reason) ⁃ Similarity score from 0 to 100 ⁃ The URL where the similar sentences found in the search are located (url)
+
+Example report json format: 
+{
+  "found": true,
+  "target_sentence": "I always called that person teacher. Therefore, I will only describe him as a teacher here as well, and will not disclose his real name. This is not because I care about the world, but because it is the most natural for me.",
+  "found_sentence": "I always called the person Sensei. So even here I just write Sensei and do not divulge his real name. This is more because it is more natural for me than because I am afraid to be shy.",
+  "reason": "It has almost the same structure and content as the searched text.",
+  "similarity": 35,
+  "url": "https://www.example.com"
+}
+
+
+If not found: set found to false, similarity to 0, and any missing value to an empty string

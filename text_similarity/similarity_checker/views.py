@@ -1,23 +1,35 @@
 from django.shortcuts import render
+from django.conf import settings
+import os
+import json
 from openai import OpenAI
 
 def index(request):
     text = ''
-    count = ''
+    response_json = {}
     if request.method == "POST":
         text = request.POST.get('text', '')
         client = OpenAI()
-        
+
+        system_prompt_prompt_file_path = os.path.join(settings.BASE_DIR, 'similarity_checker', 'prompt', 'system')
+        with open(system_prompt_prompt_file_path, 'r') as file:
+            system_prompt = file.read().strip()
+
+        print("request start")
         completion = client.chat.completions.create(
-            model="gpt-3.5-turbo",
+            model="gpt-4-turbo-preview",
             messages=[
-                {"role": "system", "content": "You are an assistant who counts the number of characters in a given text. Please return only the number of characters."},
+                {"role": "system", "content": system_prompt},
                 {"role": "user", "content": text}
             ]
         )
         
         response = completion.choices[0].message.content
         print(response)
-        count = response  # APIからの応答をそのまま使用
+        print(type(response))
+        response_json = json.loads(response)
+        print(response_json)
+        print(type(response_json))
 
-    return render(request, 'similarity_checker/index.html', {'text': text, 'count': count})
+    return render(request, 'similarity_checker/index.html', {'text': text, 'response_data': response_json})
+
