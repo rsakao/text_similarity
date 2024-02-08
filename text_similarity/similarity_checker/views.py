@@ -38,7 +38,7 @@ def index(request):
         # OpneAI API
         client = OpenAI()
 
-        system_prompt_prompt_file_path = os.path.join(settings.BASE_DIR, 'similarity_checker', 'prompt', 'system')
+        system_prompt_prompt_file_path = os.path.join(settings.BASE_DIR, 'similarity_checker', 'prompt', 'system_jp')
         with open(system_prompt_prompt_file_path, 'r') as file:
             system_prompt = file.read().strip()
 

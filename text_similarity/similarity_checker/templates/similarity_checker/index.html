@@ -1,38 +1,105 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Similarity Checker</title>
-    <script type="text/javascript">
-        function checkInputLength() {
-            // https://learn.microsoft.com/ja-jp/rest/api/cognitiveservices-bingsearch/bing-web-api-v7-reference
-            // api v7の制限
-            var textArea = document.getElementById('textInput');
-            var textLength = textArea.value.length;
-            if (textLength > 1500) {
-                alert('入力文字数が1,500文字を超えています。1,500文字未満にしてください。\n現在の文字数: ' + textLength + '');
-                return false; // フォームの送信を阻止
-            } else if (textLength === 0) {
-                alert('入力が空です。テキストを入力してください。');
-                return false; // フォームの送信を阻止
-            }
-            return true; // 入力が適切ならフォームを送信
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <style>
+        body {
+            padding-top: 20px;
         }
+        .container {
+            max-width: 800px;
+        }
+        .result-table th, .result-table td {
+            padding: 0.5rem;
+        }
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="mb-4">Similarity Checker</h1>
+        <form method="POST" onsubmit="return checkInputLength() && toggleLoading(true);" class="mb-3">
+            {% csrf_token %}
+            <div class="mb-3">
+                <textarea id="textInput" name="text" rows="5" class="form-control" placeholder="入力した文章に類似した文章をインターネットから探します">{{ text }}</textarea>
+            </div>
+            <button type="submit" id="submitBtn" class="btn btn-primary">Check Sentence</button>
+        </form>
+        <div id="loadingMessage" class="alert alert-info hidden">Processing... Please wait.</div>
 
-        // 処理中メッセージの表示と非表示を制御する関数
+        {% if response_data and response_data.found and response_data.similarity >= 30 %}
+        <div id="result" class="mb-3">
+            <h2>Result</h2>
+            <table class="table result-table">
+                <tbody>
+                    <tr>
+                        <th scope="row">Found Sentence</th>
+                        <td>{{ response_data.found_sentence }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">Reason</th>
+                        <td>{{ response_data.reason }}</td>
+                    </tr>
+                    <tr>
+                        <th scope="row">URL</th>
+                        <td><a href="{{ response_data.url }}" target="_blank">{{ response_data.url }}</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+
+        {% if response_data %}
+        <h2 class="mb-3" onclick="toggleSectionVisibility('responseSection')">Details</h2>
+        <div id="responseSection" class="hidden">
+            <p>Found: {{ response_data.found }}</p>
+            <p>Target Sentence: {{ response_data.target_sentence }}</p>
+            <p>Found Sentence: {{ response_data.found_sentence }}</p>
+            <p>Reason: {{ response_data.reason }}</p>
+            <p>Similarity: {{ response_data.similarity }}%</p>
+            <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
+        </div>
+        {% endif %}
+
+        {% if search_results %}
+        <h2 class="mb-3" onclick="toggleSectionVisibility('searchResultsSection')">Web Search Results</h2>
+        <div id="searchResultsSection" class="hidden">
+            <table>
+                <tr>
+                    <th>Name</th>
+                    <th>Snippet</th>
+                </tr>
+                {% for v in search_results %}
+                <tr>
+                    <td><a href="{{ v.url }}">{{ v.name }}</a></td>
+                    <td>{{ v.snippet }}</td>
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
+
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        // 処理中メッセージの表示とボタンの無効化/有効化を制御する関数
         function toggleLoading(show) {
             const loadingMessage = document.getElementById('loadingMessage');
+            const submitBtn = document.getElementById('submitBtn'); // 送信ボタンのID
             if (show) {
                 loadingMessage.style.display = 'block'; // 処理中メッセージを表示
+                submitBtn.disabled = true; // 送信ボタンを無効化
             } else {
                 loadingMessage.style.display = 'none'; // 処理中メッセージを非表示
+                submitBtn.disabled = false; // 送信ボタンを有効化
             }
         }
-
-        // ページ読み込み時にセクションを折りたたむ関数
-        window.onload = function() {
-            toggleSection('responseSection', false);
-            toggleSection('searchResultsSection', false);
-        };
 
         // セクションの表示/非表示を切り替える関数
         function toggleSection(sectionId, show) {
@@ -53,101 +120,32 @@
                 section.style.display = 'none';
             }
         }
-    </script>
-</head>
-<body>
-    <h1>Similarity Checker</h1>
-    <style>
-        textarea {
-            width: 30%; /* 幅をページ幅に合わせて広げる */
-            height: 200px; /* 高さを200pxに設定 */
-            padding: 12px 20px; /* パディングを追加 */
-            box-sizing: border-box; /* パディングと境界線を幅と高さに含める */
-            border: 2px solid #ccc; /* 境界線をわかりやすくする */
-            border-radius: 4px; /* 境界線の角を丸くする */
-            background-color: #f8f8f8; /* 背景色を設定 */
-            resize: none; /* ユーザーによるリサイズを無効にする */
-        }
-        form {
-            margin-bottom: 20px; /* フォームの下に余白を追加 */
-        }
-    </style>
-    <form method="POST" onsubmit="return checkInputLength() && toggleLoading(true);">
-        {% csrf_token %}
-        <textarea id="textInput" name="text" rows="5" cols="30" placeholder="入力した文章に類似した文章をインターネットから探します">{{ text }}</textarea>
-        <br>
-        <button type="submit">check sentence</button>
-    </form>
-    <div id="loadingMessage" style="display: none;">処理中です。お待ちください...</div> <!-- 処理中メッセージ -->
 
-    <script type="text/javascript">
-        toggleLoading(false); // ページ読み込み時に処理中メッセージを非表示
-    </script>
-
-    {% if response_data and response_data.found and response_data.similarity >= 30 %}
-    <div id="result">
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
+        function checkInputLength() {
+            // https://learn.microsoft.com/ja-jp/rest/api/cognitiveservices-bingsearch/bing-web-api-v7-reference
+            // api v7の制限
+            var textArea = document.getElementById('textInput');
+            var textLength = textArea.value.length;
+            if (textLength > 1500) {
+                alert('入力文字数が1,500文字を超えています。1,500文字未満にしてください。\n現在の文字数: ' + textLength + '');
+                return false; // フォームの送信を阻止
+            } else if (textLength === 0) {
+                alert('入力が空です。テキストを入力してください。');
+                return false; // フォームの送信を阻止
             }
-            th, td {
-                padding: 8px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
-            }
-            tr:hover {background-color: #f5f5f5;}
-        </style>
-        <h2>Result</h2>
-        <table>
-            <tr>
-                <th>項目</th>
-                <th>内容</th>
-            </tr>
-            <tr>
-                <td>インターネットで見つかった文章</td>
-                <td>{{ response_data.found_sentence }}</td>
-            </tr>
-            <tr>
-                <td>類似と判定した理由</td>
-                <td>{{ response_data.reason }}</td>
-            </tr>
-            <tr>
-                <td>URL</td>
-                <td><a href="{{ response_data.url }}">{{ response_data.url }}</a></td>
-            </tr>
-        </table>
-    </div>
-    {% endif %}
+            // 送信ボタンを無効化
+            document.getElementById('submitBtn').disabled = true;
+            toggleLoading(true); // 処理中メッセージを表示
+            return true; // 入力が適切ならフォームを送信
+        }
 
-    {% if response_data %}
-    <h2 onclick="toggleSectionVisibility('responseSection')">Details</h2>
-    <div id="responseSection" style="display: none;">
-    <p>Found: {{ response_data.found }}</p>
-    <p>Target Sentence: {{ response_data.target_sentence }}</p>
-    <p>Found Sentence: {{ response_data.found_sentence }}</p>
-    <p>Reason: {{ response_data.reason }}</p>
-    <p>Similarity: {{ response_data.similarity }}%</p>
-    <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
-    </div>
-    {% endif %}
+        // ページ読み込み時にセクションを折りたたむ関数
+        window.onload = function() {
+            toggleSection('responseSection', false);
+            toggleSection('searchResultsSection', false);
+            toggleLoading(false); // ページ読み込み時に処理中メッセージを非表示
+        };
 
-    {% if search_results %}
-    <h2 onclick="toggleSectionVisibility('searchResultsSection')">Web Search Results</h2>
-    <div id="searchResultsSection" style="display: none;">
-        <table>
-            <tr>
-                <th>Name</th>
-                <th>Snippet</th>
-            </tr>
-            {% for v in search_results %}
-            <tr>
-                <td><a href="{{ v.url }}">{{ v.name }}</a></td>
-                <td>{{ v.snippet }}</td>
-            </tr>
-            {% endfor %}
-        </table>
-    </div>
-    {% endif %}
+    </script>
 </body>
 </html>
