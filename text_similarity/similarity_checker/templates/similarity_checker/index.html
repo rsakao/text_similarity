@@ -7,12 +7,11 @@
     <h1>Character Count</h1>
     <form method="POST">
         {% csrf_token %}
-        <label for="text">Enter your text:</label><br>
-        <textarea name="text" id="text" rows="5" cols="30">{{ text }}</textarea>
+        <textarea name="text" rows="5" cols="30">{{ text }}</textarea>
         <br>
         <button type="submit">Count Characters</button>
     </form>
-    {% if count >= 0 %}
+    {% if count %}
     <p>Number of characters: {{ count }}</p>
     {% endif %}
 </body>
