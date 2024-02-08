@@ -2,16 +2,47 @@
 <html>
 <head>
     <title>Similarity Checker</title>
+    <script type="text/javascript">
+        function checkInputLength() {
+            // https://learn.microsoft.com/ja-jp/rest/api/cognitiveservices-bingsearch/bing-web-api-v7-reference
+            // api v7の制限
+            var textArea = document.getElementById('textInput');
+            var textLength = textArea.value.length;
+            if (textLength > 1500) {
+                alert('入力文字数が1,500文字を超えています。1,500文字未満にしてください。\n現在の文字数: ' + textLength + '');
+                return false; // フォームの送信を阻止
+            } else if (textLength === 0) {
+                alert('入力が空です。テキストを入力してください。');
+                return false; // フォームの送信を阻止
+            }
+            return true; // 入力が適切ならフォームを送信
+        }
+
+        // 処理中メッセージの表示と非表示を制御する関数
+        function toggleLoading(show) {
+            const loadingMessage = document.getElementById('loadingMessage');
+            if (show) {
+                loadingMessage.style.display = 'block'; // 処理中メッセージを表示
+            } else {
+                loadingMessage.style.display = 'none'; // 処理中メッセージを非表示
+            }
+        }
+    </script>
 </head>
 <body>
     <h1>Similarity Checker Viewer</h1>
-    <form method="POST">
+    <form method="POST" onsubmit="return checkInputLength() && toggleLoading(true);">
         {% csrf_token %}
-        <textarea name="text" rows="5" cols="30">{{ text }}</textarea>
+        <textarea id="textInput" name="text" rows="5" cols="30">{{ text }}</textarea>
         <br>
         <button type="submit">check sentence</button>
     </form>
+    <div id="loadingMessage" style="display: none;">処理中です。お待ちください...</div> <!-- 処理中メッセージ -->
+    
     {% if response_data %}
+        <script type="text/javascript">
+            toggleLoading(false); // ページ読み込み時に処理中メッセージを非表示
+        </script>
         <h2>Response:</h2>
         <p>Found: {{ response_data.found }}</p>
         <p>Target Sentence: {{ response_data.target_sentence }}</p>
@@ -21,19 +52,19 @@
         <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
     {% endif %}
     {% if search_results %}
-    <h2>Search Results:</h2>
-    <table>
-        <tr>
-            <th>Name</th>
-            <th>Snippet</th>
-        </tr>
-        {% for v in search_results %}
-        <tr>
-            <td><a href="{{ v.url }}">{{ v.name }}</a></td>
-            <td>{{ v.snippet }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-{% endif %}
+        <h2>Web Search Results:</h2>
+        <table>
+            <tr>
+                <th>Name</th>
+                <th>Snippet</th>
+            </tr>
+            {% for v in search_results %}
+            <tr>
+                <td><a href="{{ v.url }}">{{ v.name }}</a></td>
+                <td>{{ v.snippet }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% endif %}
 </body>
 </html>
