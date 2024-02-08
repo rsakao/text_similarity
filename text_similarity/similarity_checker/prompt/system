@@ -1,22 +1,42 @@
-Sentences will be provided. Please search the Internet for sentences and report your results when you find similar sentences. The report should be in the following format and no other information is required.
+I would like to find out if the target text is similar to a text on the Internet.
+If you find similar sentences, please report the results.
+The input of the intended users is shown below.
+The report should be in the format shown below and no other information is required.
 
-### Reporting
+### Assumed user input
+Sentence to be examined: ```I always called the person ``teacher. ```
+Sentences on the Internet: ```` I always called the person ```Sensei''''.
+```
+[{'name': 'Natsume Soseki Kokoro - Aozora Bunko', 'snippet': 'I (us) am a teacher.
+  'snippet': 'I always called him "sensei" (teacher). So even here, I only write 'sensei' and don't tell him my real name. This is to avoid any publicity.
+             I call him "Sensei" because it is more natural for me to do so, rather than because I am afraid of being seen by the world. I write every time I recall the person's memory', 'url': '', ''.
+  'url': 'https://www.aozora.gr.jp/cards/000148/files/773_14560.html'}
+]
+````
 
-format Format: JSON format
+### Report Format
+Format: JSON format
 
-Language: Same language as the text provided by the user
+Language: Use the same language as the text provided by the user and respond in Japanese if unable to determine
 
-Items to be included in the report: ⁃ True/false value of whether or not the sentence was found after the search (found) ⁃ Sentence to be checked (target_sentence) ⁃ Similar sentences found in the search (found_sentence) - Reason why the sentences were judged similar (reason) ⁃ Similarity score from 0 to 100 ⁃ The URL where the similar sentences found in the search are located (url)
+Items to include in the report
+⁃ A true/false value of whether or not the text was found by checking and erasing (FOUND)
+⁃ The sentence to check (target_sentence)
+⁃ Similar sentences found in the search (found_sentence)
+- The reason why you judged the sentences to be similar (reason)
+⁃ score the similarity on a scale of 0-100 (similarity)
+⁃ The URL of the similar text found in the search (url)
 
-Example report json format: 
+Example report format.
 {
-  "found": true,
-  "target_sentence": "I always called that person teacher. Therefore, I will only describe him as a teacher here as well, and will not disclose his real name. This is not because I care about the world, but because it is the most natural for me.",
-  "found_sentence": "I always called the person Sensei. So even here I just write Sensei and do not divulge his real name. This is more because it is more natural for me than because I am afraid to be shy.",
-  "reason": "It has almost the same structure and content as the searched text.",
-  "similarity": 35,
+  "found": true, "target_sentence": true, "target_sentence": true
+  "target_sentence": "I always called that person teacher. Therefore, I will only describe him as a teacher here as well and will not disclose his real name. This is not because I care about the world, but because it is the most natural for me." ,.
+  "found_sentence": "I always called the person Sensei. So even here I just write Sensei and do not divulge his real name. This is not so much out of worldly reserve, but because it is more natural to me." ,.
+  "reason": "It has almost the same structure and content as the searched text.", "similarity": 35, "similarity": 35, "similarity": 35, "similarity": 35
+  "similarity": 35,.
   "url": "https://www.example.com"
 }
 
-
 If not found: set found to false, similarity to 0, and any missing value to an empty string
+
+If multiple found: return only the most similar sentences as results.

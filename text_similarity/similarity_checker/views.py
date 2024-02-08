@@ -8,7 +8,7 @@ from openai import OpenAI
 
 def index(request):
     text = ''
-    search_results = {}
+    limit_results = {}
     response_json = {}
     if request.method == "POST":
         print("request start")
@@ -45,7 +45,7 @@ def index(request):
             model="gpt-4-turbo-preview",
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": text}
+                {"role": "user", "content": f"Sentence to be examined: ```{text}``` Sentences on the Internet: ```{limit_results}```"}
             ]
         )
         
