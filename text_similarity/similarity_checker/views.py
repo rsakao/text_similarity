@@ -23,6 +23,7 @@ def index(request):
         params = {'q': text, 'mkt': mkt}
         headers = {'Ocp-Apim-Subscription-Key': subscription_key}
 
+        print("search start")
         try:
             response = requests.get(endpoint, headers=headers, params=params)
             response.raise_for_status()
@@ -41,6 +42,7 @@ def index(request):
         with open(system_prompt_prompt_file_path, 'r') as file:
             system_prompt = file.read().strip()
 
+        print("gpt start")
         completion = client.chat.completions.create(
             model="gpt-4-turbo-preview",
             messages=[
@@ -50,11 +52,8 @@ def index(request):
         )
         
         response = completion.choices[0].message.content
-        print(response)
-        print(type(response))
         response_json = json.loads(response)
         print(response_json)
-        print(type(response_json))
 
     return render(request, 'similarity_checker/index.html', {'text': text, 'search_results': limit_results, 'response_data': response_json})
 

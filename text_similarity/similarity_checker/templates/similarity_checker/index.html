@@ -27,10 +27,36 @@
                 loadingMessage.style.display = 'none'; // 処理中メッセージを非表示
             }
         }
+
+        // ページ読み込み時にセクションを折りたたむ関数
+        window.onload = function() {
+            toggleSection('responseSection', false);
+            toggleSection('searchResultsSection', false);
+        };
+
+        // セクションの表示/非表示を切り替える関数
+        function toggleSection(sectionId, show) {
+            var section = document.getElementById(sectionId);
+            if (show) {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
+
+        // セクションの表示/非表示をトグルする関数
+        function toggleSectionVisibility(sectionId) {
+            var section = document.getElementById(sectionId);
+            if (section.style.display === 'none') {
+                section.style.display = 'block';
+            } else {
+                section.style.display = 'none';
+            }
+        }
     </script>
 </head>
 <body>
-    <h1>Similarity Checker Viewer</h1>
+    <h1>Similarity Checker</h1>
     <form method="POST" onsubmit="return checkInputLength() && toggleLoading(true);">
         {% csrf_token %}
         <textarea id="textInput" name="text" rows="5" cols="30">{{ text }}</textarea>
@@ -38,21 +64,62 @@
         <button type="submit">check sentence</button>
     </form>
     <div id="loadingMessage" style="display: none;">処理中です。お待ちください...</div> <!-- 処理中メッセージ -->
-    
-    {% if response_data %}
-        <script type="text/javascript">
-            toggleLoading(false); // ページ読み込み時に処理中メッセージを非表示
-        </script>
-        <h2>Response:</h2>
-        <p>Found: {{ response_data.found }}</p>
-        <p>Target Sentence: {{ response_data.target_sentence }}</p>
-        <p>Found Sentence: {{ response_data.found_sentence }}</p>
-        <p>Reason: {{ response_data.reason }}</p>
-        <p>Similarity: {{ response_data.similarity }}%</p>
-        <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
+
+    <script type="text/javascript">
+        toggleLoading(false); // ページ読み込み時に処理中メッセージを非表示
+    </script>
+
+    {% if response_data and response_data.found and response_data.similarity >= 30 %}
+    <div id="result">
+        <style>
+            table {
+                width: 100%;
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 8px;
+                text-align: left;
+                border-bottom: 1px solid #ddd;
+            }
+            tr:hover {background-color: #f5f5f5;}
+        </style>
+        <h2>Result</h2>
+        <table>
+            <tr>
+                <th>項目</th>
+                <th>内容</th>
+            </tr>
+            <tr>
+                <td>インターネットで見つかった文章</td>
+                <td>{{ response_data.found_sentence }}</td>
+            </tr>
+            <tr>
+                <td>類似と判定した理由</td>
+                <td>{{ response_data.reason }}</td>
+            </tr>
+            <tr>
+                <td>URL</td>
+                <td><a href="{{ response_data.url }}">{{ response_data.url }}</a></td>
+            </tr>
+        </table>
+    </div>
     {% endif %}
+
+    {% if response_data %}
+    <h2 onclick="toggleSectionVisibility('responseSection')">Details</h2>
+    <div id="responseSection" style="display: none;">
+    <p>Found: {{ response_data.found }}</p>
+    <p>Target Sentence: {{ response_data.target_sentence }}</p>
+    <p>Found Sentence: {{ response_data.found_sentence }}</p>
+    <p>Reason: {{ response_data.reason }}</p>
+    <p>Similarity: {{ response_data.similarity }}%</p>
+    <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
+    </div>
+    {% endif %}
+
     {% if search_results %}
-        <h2>Web Search Results:</h2>
+    <h2 onclick="toggleSectionVisibility('searchResultsSection')">Web Search Results</h2>
+    <div id="searchResultsSection" style="display: none;">
         <table>
             <tr>
                 <th>Name</th>
@@ -65,6 +132,7 @@
             </tr>
             {% endfor %}
         </table>
+    </div>
     {% endif %}
 </body>
 </html>
