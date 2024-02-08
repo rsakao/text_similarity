@@ -57,9 +57,24 @@
 </head>
 <body>
     <h1>Similarity Checker</h1>
+    <style>
+        textarea {
+            width: 30%; /* 幅をページ幅に合わせて広げる */
+            height: 200px; /* 高さを200pxに設定 */
+            padding: 12px 20px; /* パディングを追加 */
+            box-sizing: border-box; /* パディングと境界線を幅と高さに含める */
+            border: 2px solid #ccc; /* 境界線をわかりやすくする */
+            border-radius: 4px; /* 境界線の角を丸くする */
+            background-color: #f8f8f8; /* 背景色を設定 */
+            resize: none; /* ユーザーによるリサイズを無効にする */
+        }
+        form {
+            margin-bottom: 20px; /* フォームの下に余白を追加 */
+        }
+    </style>
     <form method="POST" onsubmit="return checkInputLength() && toggleLoading(true);">
         {% csrf_token %}
-        <textarea id="textInput" name="text" rows="5" cols="30">{{ text }}</textarea>
+        <textarea id="textInput" name="text" rows="5" cols="30" placeholder="入力した文章に類似した文章をインターネットから探します">{{ text }}</textarea>
         <br>
         <button type="submit">check sentence</button>
     </form>
