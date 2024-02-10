@@ -1,4 +1,4 @@
-# text_similarity
+# Text Similarity
 
 <p align="center">
 <img src="similarity_checker.png" alt="Slidev" height="250" width="250"/>
@@ -10,9 +10,9 @@ Search the Internet for similar texts.
 </p>
 
 sample:
-![alt text](sample.png)
+![alt text](app_sample.png)
 
-### usage
+### Usage
 Make the necessary settings
 ```
 export OPENAI_API_KEY=<ChatGPT OpenAI API Key>
@@ -27,5 +27,17 @@ python manage.py runserver
 
 access to: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
-### 制限事項
+### Character Limit
 The maximum text you can enter is 1,500 characters. This is a Bing Search API limitation.
+
+https://learn.microsoft.com/ja-jp/rest/api/cognitiveservices-bingsearch/bing-web-api-v7-reference#the-request-must-use-the-https-protocol
+
+### Development
+```
+ython -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt 
+```
+
+### Application Smaple Image
+![alt text](app_sample_expand_all.png)
