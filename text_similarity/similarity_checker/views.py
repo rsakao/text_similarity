@@ -52,7 +52,11 @@ def index(request):
         )
         
         response = completion.choices[0].message.content
-        response_json = json.loads(response)
+        pprint(completion)
+        try:
+            response_json = json.loads(response)
+        except json.JSONDecodeError as e:
+            print(f"JSON decode error: {e}")
         print(response_json)
 
     return render(request, 'similarity_checker/index.html', {'text': text, 'search_results': limit_results, 'response_data': response_json})
