@@ -31,6 +31,9 @@ DEBUG = True
 allow_hosts = os.getenv('ALLOWED_HOSTS', '')
 ALLOWED_HOSTS = allow_hosts.split(',') if allow_hosts else []
 
+csrf_origins = os.getenv('CSRF_TRUSTED_ORIGINS', '')
+CSRF_TRUSTED_ORIGINS = csrf_origins.split(',') if csrf_origins else []
+
 # Application definition
 
 INSTALLED_APPS = [
