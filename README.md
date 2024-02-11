@@ -21,7 +21,6 @@ export BING_SEARCH_V7_ENDPOINT=https://api.bing.microsoft.com/
 ```
 
 ```
-cd text_similartity
 python manage.py runserver
 ```
 
