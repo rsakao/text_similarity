@@ -40,6 +40,13 @@ Run Server:
 python manage.py runserver
 ```
 
+or,  
+docker run:
+```
+docker build -t similarity .
+docker run -d -p 8000:8000 --env-file .env similarity
+```
+
 access to: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 
 ## Character Limit
