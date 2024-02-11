@@ -62,7 +62,7 @@
             <p>Found Sentence: {{ response_data.found_sentence }}</p>
             <p>Reason: {{ response_data.reason }}</p>
             <p>Similarity: {{ response_data.similarity }}%</p>
-            <p>URL: <a href="{{ response_data.url }}">{{ response_data.url }}</a></p>
+            <p>URL: <a href="{{ response_data.url }}" target="_blank">{{ response_data.url }}</a></p>
         </div>
         {% endif %}
 
@@ -76,7 +76,7 @@
                 </tr>
                 {% for v in search_results %}
                 <tr>
-                    <td><a href="{{ v.url }}">{{ v.name }}</a></td>
+                    <td><a href="{{ v.url }}" target="_blank">{{ v.name }}</a></td>
                     <td>{{ v.snippet }}</td>
                 </tr>
                 {% endfor %}
