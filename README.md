@@ -1,7 +1,7 @@
 # Text Similarity
 
 <p align="center">
-<img src="similarity_checker.png" alt="Slidev" height="250" width="250"/>
+<img src="docs/static_files/logo.png" alt="Slidev" height="250" width="250"/>
 </p>
 
 
@@ -10,7 +10,7 @@ Search the Internet for similar texts.
 </p>
 
 sample:
-![alt text](app_sample.png)
+![alt text](docs/static_files/app_sample.png)
 
 ## Usage
 ### Setting
@@ -56,4 +56,4 @@ pip install -r requirements.txt
 ```
 
 ## Application Smaple Image
-![alt text](app_sample_expand_all.png)
+![alt text](docs/static_files/app_sample_expand_all.png)
